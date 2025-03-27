@@ -1,6 +1,22 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 
+const countryFlags = {
+  "USA": "🇺🇸",
+  "China": "🇨🇳",
+  "Russia": "🇷🇺",
+  "EU": "🇪🇺",
+  "India": "🇮🇳",
+  "Turkey": "🇹🇷",
+  "Iran": "🇮🇷",
+  "UK": "🇬🇧",
+  "Germany": "🇩🇪",
+  "France": "🇫🇷",
+  "Africa": "🌍",
+  "Latin America": "🌎",
+  "Southeast Asia": "🌏"
+};
+
 const countries = [
   "USA", "China", "Russia", "EU", "India", "Turkey", "Iran",
   "UK", "Germany", "France", "Africa", "Latin America", "Southeast Asia"
@@ -35,7 +51,7 @@ export default function GeopoliticalChessboard({ darkMode }) {
 
   const getCountryNews = async (country) => {
     setNewsLoading(country);
-    const apiKey = "e1993fde70933ab5cceccf0e14b96554"; 
+    const apiKey = "YOUR_GNEWS_API_KEY"; // Replace with your real key
     const query = encodeURIComponent(country);
     const url = `https://gnews.io/api/v4/search?q=${query}&lang=en&max=3&apikey=${apiKey}`;
 
@@ -55,23 +71,33 @@ export default function GeopoliticalChessboard({ darkMode }) {
   };
 
   return (
-    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '20px', padding: '20px' }}>
+    <div style={{
+      display: 'grid',
+      gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
+      gap: '20px',
+      padding: '20px',
+    }}>
       {countries.map((country, index) => (
         <motion.div
           key={index}
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: index * 0.1 }}
+          whileHover={{ scale: 1.03 }}
           style={{
             background: darkMode ? '#111' : '#fff',
             color: darkMode ? '#fff' : '#000',
             borderRadius: '16px',
             boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
             padding: '16px',
-            border: `1px solid ${darkMode ? '#333' : '#ccc'}`
+            border: `1px solid ${darkMode ? '#333' : '#ccc'}`,
+            transition: 'all 0.3s ease',
+            cursor: 'pointer',
           }}
         >
-          <h2 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '8px' }}>{country}</h2>
+          <h2 style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '8px' }}>
+            {countryFlags[country]} {country}
+          </h2>
 
           <div style={{ display: 'flex', gap: '10px', marginBottom: '10px' }}>
             <button
