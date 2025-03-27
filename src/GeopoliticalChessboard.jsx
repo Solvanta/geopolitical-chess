@@ -15,7 +15,7 @@ export default function GeopoliticalChessboard({ darkMode }) {
   const getAIStrategy = async (country) => {
     setLoading(country);
     try {
-      const response = await fetch("http://localhost:5000/api/strategy", {
+      const response = await fetch("https://geopolitical-backend.onrender.com/api/strategy", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
