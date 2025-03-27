@@ -51,13 +51,18 @@ export default function GeopoliticalChessboard({ darkMode }) {
 
   const getCountryNews = async (country) => {
     setNewsLoading(country);
-    const apiKey = "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"; 
-    const query = encodeURIComponent(country);
-    const url = `https://gnews.io/api/v4/search?q=${query}&lang=en&max=3&apikey=${apiKey}`;
 
     try {
-      const response = await fetch(url);
+      const response = await fetch("https://geopolitical-backend.onrender.com/api/news", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ country })
+      });
+
       const data = await response.json();
+
       setNews((prev) => ({
         ...prev,
         [country]: data.articles || []
