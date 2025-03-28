@@ -63,10 +63,12 @@ export default function GeopoliticalChessboard({ darkMode }) {
 
       const data = await response.json();
 
-      setNews((prev) => ({
-        ...prev,
-        [country]: data.articles || []
-      }));
+      if (data.error) {
+        console.error("Backend error:", data.error);
+        setNews((prev) => ({ ...prev, [country]: [] }));
+      } else {
+        setNews((prev) => ({ ...prev, [country]: data.articles || [] }));
+      }
     } catch (err) {
       console.error(err);
       setNews((prev) => ({ ...prev, [country]: [] }));
@@ -140,37 +142,24 @@ export default function GeopoliticalChessboard({ darkMode }) {
             {summaries[country] || "Click the button to get strategy summary."}
           </p>
 
-{news[country] && (
-  <div style={{ marginTop: '10px' }}>
-    <h4 style={{ marginBottom: '4px' }}>📰 Latest News:</h4>
-    {news[country].length > 0 ? (
-      <ul style={{ paddingLeft: '18px' }}>
-        {news[country].map((article, i) => (
-          <li key={i} style={{ fontSize: '13px', marginBottom: '6px' }}>
-            <a href={article.url} target="_blank" rel="noopener noreferrer" style={{ color: darkMode ? '#4fd1c5' : '#007acc' }}>
-              {article.title}
-            </a>
-          </li>
-        ))}
-      </ul>
-    ) : (
-      <p style={{ fontSize: '13px', color: darkMode ? '#aaa' : '#555' }}>
-        No news found for {country}.
-      </p>
-    )}
-  </div>
-)}
+          {news[country] && (
             <div style={{ marginTop: '10px' }}>
               <h4 style={{ marginBottom: '4px' }}>📰 Latest News:</h4>
-              <ul style={{ paddingLeft: '18px' }}>
-                {news[country].map((article, i) => (
-                  <li key={i} style={{ fontSize: '13px', marginBottom: '6px' }}>
-                    <a href={article.url} target="_blank" rel="noopener noreferrer" style={{ color: darkMode ? '#4fd1c5' : '#007acc' }}>
-                      {article.title}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+              {news[country].length > 0 ? (
+                <ul style={{ paddingLeft: '18px' }}>
+                  {news[country].map((article, i) => (
+                    <li key={i} style={{ fontSize: '13px', marginBottom: '6px' }}>
+                      <a href={article.url} target="_blank" rel="noopener noreferrer" style={{ color: darkMode ? '#4fd1c5' : '#007acc' }}>
+                        {article.title}
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <p style={{ fontSize: '13px', color: darkMode ? '#aaa' : '#555' }}>
+                  No news found for {country}.
+                </p>
+              )}
             </div>
           )}
         </motion.div>
