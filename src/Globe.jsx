@@ -1,6 +1,7 @@
 import React, { Suspense } from "react";
 import { Canvas, useLoader } from "@react-three/fiber";
-import { OrbitControls, Stars, Sphere, Html } from "@react-three/drei";
+import { OrbitControls, Stars } from "@react-three/drei";
+import { Sphere, Html } from "@react-three/drei";
 import * as THREE from "three";
 
 const countryData = [
@@ -47,11 +48,10 @@ function CountryMarker({ country }) {
 }
 
 function Earth({ darkMode }) {
-  const textureURL = darkMode
-    ? https://cdn.jsdelivr.net/gh/USERNAME/REPO/assets/earth_nightmap.jpg
-    : "https://cdn.jsdelivr.net/gh/Solvanta/geopolitical-chess/assets/earth_daymap.jpg";
-
-  const texture = useLoader(THREE.TextureLoader, textureURL);
+  const texture = useLoader(
+    THREE.TextureLoader,
+    darkMode ? "/assets/earth-night.jpg" : "/assets/earth-daymap.jpg"
+  );
 
   return (
     <Sphere args={[2, 64, 64]}>
@@ -64,7 +64,7 @@ export default function Globe({ darkMode }) {
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
       <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
-        <ambientLight intensity={0.5} />
+        <ambientLight intensity={darkMode ? 0.3 : 0.6} />
         <pointLight position={[10, 10, 10]} intensity={1} />
         <Stars radius={100} depth={50} count={3000} factor={4} fade />
 
@@ -75,7 +75,7 @@ export default function Globe({ darkMode }) {
           ))}
         </Suspense>
 
-        <OrbitControls enableZoom={true} enablePan={false} rotateSpeed={0.6} />
+        <OrbitControls enableZoom enablePan={false} rotateSpeed={0.6} />
       </Canvas>
     </div>
   );
