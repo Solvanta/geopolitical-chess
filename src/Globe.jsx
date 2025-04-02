@@ -48,7 +48,7 @@ function CountryMarker({ country }) {
 
 function Earth({ darkMode }) {
   const textureURL = darkMode
-    ? "https://cdn.jsdelivr.net/gh/Solvanta/geopolitical-chess/assets/earth_nightmap.jpg"
+    ? https://cdn.jsdelivr.net/gh/USERNAME/REPO/assets/earth_nightmap.jpg
     : "https://cdn.jsdelivr.net/gh/Solvanta/geopolitical-chess/assets/earth_daymap.jpg";
 
   const texture = useLoader(THREE.TextureLoader, textureURL);
