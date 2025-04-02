@@ -1,157 +1,111 @@
 import React, { useState } from "react";
 
-const countryRoles = {
-  USA: "♚ King",
-  China: "♛ Queen",
-  Russia: "♜ Rook",
-  EU: "♝ Bishop",
-  India: "♞ Knight",
-  Turkey: "♟︎ Pawn",
-  Iran: "♟︎ Pawn",
-  UK: "♝ Bishop",
-  Germany: "♜ Rook",
-  France: "♞ Knight",
-  Africa: "♟︎ Pawn",
-  "Latin America": "♟︎ Pawn",
-  "Southeast Asia": "♟︎ Pawn",
-  Japan: "♞ Knight",
-  Brazil: "♟︎ Pawn",
-  Australia: "♟︎ Pawn",
-};
-
-const countryFlags = {
-  USA: "🇺🇸",
-  China: "🇨🇳",
-  Russia: "🇷🇺",
-  EU: "🇪🇺",
-  India: "🇮🇳",
-  Turkey: "🇹🇷",
-  Iran: "🇮🇷",
-  UK: "🇬🇧",
-  Germany: "🇩🇪",
-  France: "🇫🇷",
-  Africa: "🌍",
-  "Latin America": "🌎",
-  "Southeast Asia": "🌏",
-  Japan: "🇯🇵",
-  Brazil: "🇧🇷",
-  Australia: "🇦🇺",
-};
-
-const countries = Object.keys(countryRoles);
+const countries = [
+  { name: "USA", role: "♚ King", flag: "🇺🇸" },
+  { name: "China", role: "♛ Queen", flag: "🇨🇳" },
+  { name: "Russia", role: "♜ Rook", flag: "🇷🇺" },
+  { name: "EU", role: "♝ Bishop", flag: "🇪🇺" },
+  { name: "India", role: "♞ Knight", flag: "🇮🇳" },
+  { name: "Turkey", role: "♟ Pawn", flag: "🇹🇷" },
+  { name: "Iran", role: "♟ Pawn", flag: "🇮🇷" },
+  { name: "UK", role: "♝ Bishop", flag: "🇬🇧" },
+  { name: "Germany", role: "♜ Rook", flag: "🇩🇪" },
+  { name: "France", role: "♞ Knight", flag: "🇫🇷" },
+  { name: "Africa", role: "♟ Pawn", flag: "🌍" },
+  { name: "Latin America", role: "♟ Pawn", flag: "🌎" },
+  { name: "Southeast Asia", role: "♟ Pawn", flag: "🌏" },
+  { name: "Japan", role: "♞ Knight", flag: "🇯🇵" },
+  { name: "Brazil", role: "♟ Pawn", flag: "🇧🇷" },
+  { name: "Australia", role: "♟ Pawn", flag: "🇦🇺" },
+];
 
 export default function GeopoliticalChessboard({ darkMode }) {
-  const [summaries, setSummaries] = useState({});
-  const [loading, setLoading] = useState(null);
-  const [news, setNews] = useState({});
-  const [newsLoading, setNewsLoading] = useState(null);
+  const [strategyData, setStrategyData] = useState({});
+  const [newsData, setNewsData] = useState({});
+  const [loading, setLoading] = useState({});
 
-  const getAIStrategy = async (country) => {
-    setLoading(country);
+  const handleAI = async (country) => {
+    setLoading((prev) => ({ ...prev, [country]: true }));
     try {
-      const res = await fetch("https://geopolitical-backend.onrender.com/api/strategy", {
+      const res = await fetch("/api/strategy", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ country }),
       });
       const data = await res.json();
-      setSummaries((prev) => ({ ...prev, [country]: data.summary }));
+      setStrategyData((prev) => ({ ...prev, [country]: data.summary }));
     } catch (err) {
-      console.error(err);
-      setSummaries((prev) => ({ ...prev, [country]: "Failed to load strategy." }));
-    } finally {
-      setLoading(null);
+      setStrategyData((prev) => ({ ...prev, [country]: "Error getting AI strategy." }));
     }
+    setLoading((prev) => ({ ...prev, [country]: false }));
   };
 
-  const getCountryNews = async (country) => {
-    setNewsLoading(country);
+  const handleNews = async (country) => {
+    setLoading((prev) => ({ ...prev, [country]: true }));
     try {
-      const res = await fetch("https://geopolitical-backend.onrender.com/api/news", {
+      const res = await fetch("/api/news", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ country }),
       });
       const data = await res.json();
-      setNews((prev) => ({ ...prev, [country]: data.articles || [] }));
+      setNewsData((prev) => ({ ...prev, [country]: data.articles || [] }));
     } catch (err) {
-      console.error(err);
-      setNews((prev) => ({ ...prev, [country]: [] }));
-    } finally {
-      setNewsLoading(null);
+      setNewsData((prev) => ({ ...prev, [country]: [] }));
     }
+    setLoading((prev) => ({ ...prev, [country]: false }));
   };
 
   return (
-    <div style={{
-      display: "grid",
-      gridTemplateColumns: "repeat(4, 1fr)",
-      gap: 0,
-      maxWidth: "1200px",
-      margin: "0 auto",
-    }}>
-      {countries.map((country, i) => {
-        const isDarkTile = (Math.floor(i / 4) + i) % 2 === 0;
-        const tileColor = isDarkTile ? (darkMode ? "#1e1e1e" : "#ddd") : (darkMode ? "#2e2e2e" : "#f9f9f9");
+    <div
+      style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+        gap: "1rem",
+        padding: "1rem",
+      }}
+    >
+      {countries.map((country) => (
+        <div
+          key={country.name}
+          style={{
+            border: `1px solid ${darkMode ? "#555" : "#ccc"}`,
+            background: darkMode ? "#1e1e1e" : "#fff",
+            borderRadius: "10px",
+            padding: "1rem",
+            boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+          }}
+        >
+          <h2 style={{ marginBottom: "0.3rem" }}>{country.flag} {country.name}</h2>
+          <p style={{ opacity: 0.7 }}>{country.role}</p>
 
-        return (
-          <div key={country} style={{
-            background: tileColor,
-            color: darkMode ? "#fff" : "#000",
-            padding: "14px",
-            border: "1px solid #ccc",
-            minHeight: "180px",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
-          }}>
-            <h2 style={{ fontSize: "18px", fontWeight: "bold" }}>
-              {countryFlags[country]} {country}
-            </h2>
-            <p style={{ fontSize: "13px", color: darkMode ? "#aaa" : "#555" }} title={`Role: ${countryRoles[country]}`}>
-              {countryRoles[country]}
-            </p>
+          <div style={{ marginBottom: "10px" }}>
+            <button onClick={() => handleAI(country.name)} disabled={loading[country.name]}>
+              {loading[country.name] ? "Loading..." : "Get AI Strategy"}
+            </button>
+            <button onClick={() => handleNews(country.name)} style={{ marginLeft: "10px" }}>
+              Get News
+            </button>
+          </div>
 
-            <div style={{ display: "flex", gap: "6px", marginBottom: "8px" }}>
-              <button onClick={() => getAIStrategy(country)} style={buttonStyle(darkMode)}>
-                {loading === country ? "Thinking..." : "Get AI Strategy"}
-              </button>
-              <button onClick={() => getCountryNews(country)} style={buttonStyle(darkMode, true)}>
-                {newsLoading === country ? "Loading..." : "Get News"}
-              </button>
+          {strategyData[country.name] && (
+            <div style={{ fontSize: "0.9rem", marginTop: "0.5rem" }}>
+              <strong>AI:</strong> {strategyData[country.name]}
             </div>
+          )}
 
-            <p style={{ fontSize: "12px", color: darkMode ? "#ccc" : "#333", marginBottom: "6px" }}>
-              {summaries[country] || "Click the button to get strategy summary."}
-            </p>
-
-            {news[country]?.length > 0 && (
-              <ul style={{ fontSize: "12px", paddingLeft: "18px" }}>
-                {news[country].map((article, i) => (
-                  <li key={i}>
-                    <a href={article.url} target="_blank" rel="noopener noreferrer" style={{ color: darkMode ? "#4fd1c5" : "#007acc" }}>
-                      {article.title}
-                    </a>
-                  </li>
+          {newsData[country.name] && newsData[country.name].length > 0 && (
+            <div style={{ marginTop: "0.5rem" }}>
+              <strong>News:</strong>
+              <ul>
+                {newsData[country.name].map((a, i) => (
+                  <li key={i}><a href={a.url} target="_blank" rel="noreferrer">{a.title}</a></li>
                 ))}
               </ul>
-            )}
-          </div>
-        );
-      })}
+            </div>
+          )}
+        </div>
+      ))}
     </div>
   );
-}
-
-function buttonStyle(dark, secondary = false) {
-  return {
-    padding: "4px 8px",
-    fontSize: "12px",
-    backgroundColor: secondary ? (dark ? "#444" : "#ddd") : (dark ? "#222" : "#eee"),
-    color: dark ? "#fff" : "#000",
-    border: "1px solid",
-    borderColor: dark ? "#555" : "#bbb",
-    borderRadius: "4px",
-    cursor: "pointer",
-  };
 }

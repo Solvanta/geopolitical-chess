@@ -20,7 +20,7 @@ const countryData = [
   { name: "Southeast Asia", role: "♟ Pawn", flag: "🌏", lat: 13, lng: 100 },
   { name: "Japan", role: "♞ Knight", flag: "🇯🇵", lat: 36, lng: 138 },
   { name: "Brazil", role: "♟ Pawn", flag: "🇧🇷", lat: -14, lng: -51 },
-  { name: "Australia", role: "♟ Pawn", flag: "🇦🇺", lat: -25, lng: 133 }
+  { name: "Australia", role: "♟ Pawn", flag: "🇦🇺", lat: -25, lng: 133 },
 ];
 
 function convertLatLngToXYZ(lat, lng, radius) {
@@ -38,14 +38,10 @@ function CountryMarker({ country }) {
     <group position={[x, y, z]}>
       <mesh scale={[0.05, 0.05, 0.05]}>
         <sphereGeometry args={[1, 16, 16]} />
-        <meshStandardMaterial color="#facc15" emissive="#facc15" emissiveIntensity={0.6} />
+        <meshStandardMaterial color="#facc15" emissive="#facc15" emissiveIntensity={0.7} />
       </mesh>
       <Html distanceFactor={10} style={{ color: "white", textAlign: "center", fontSize: "10px" }}>
-        {country.flag}
-        <br />
-        {country.role}
-        <br />
-        {country.name}
+        {country.flag}<br />{country.role}<br />{country.name}
       </Html>
     </group>
   );
@@ -55,7 +51,7 @@ function Earth({ darkMode }) {
   const texture = useLoader(
     THREE.TextureLoader,
     darkMode
-      ? "/assets/earth_nightmap_hd.jpg" // ✅ make sure this is placed in /public/assets/
+      ? "/assets/earth_nightmap_hd.jpg"
       : "/assets/earth_daymap.jpg"
   );
 
@@ -70,15 +66,21 @@ export default function Globe({ darkMode }) {
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
       <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
-        <ambientLight intensity={darkMode ? 0.25 : 0.5} />
-        <pointLight position={[10, 10, 10]} intensity={1} />
+        {/* LIGHTING */}
+        <ambientLight intensity={darkMode ? 0.35 : 0.6} />
+        <pointLight position={[10, 10, 10]} intensity={1.1} />
+
+        {/* BACKGROUND STARS */}
         <Stars radius={100} depth={50} count={3000} factor={4} fade />
-        <Suspense fallback={<Html>Loading globe...</Html>}>
+
+        {/* EARTH + FLAGS */}
+        <Suspense fallback={null}>
           <Earth darkMode={darkMode} />
           {countryData.map((c, i) => (
             <CountryMarker key={i} country={c} />
           ))}
         </Suspense>
+
         <OrbitControls enableZoom enablePan={false} rotateSpeed={0.6} />
       </Canvas>
     </div>
