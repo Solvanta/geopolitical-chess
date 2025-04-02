@@ -53,7 +53,7 @@ function Earth({ darkMode }) {
     darkMode
       ? "/assets/earth_nightmap_hd.jpg"
       : "/assets/earth_daymap.jpg"
-  );
+  );  
 
   return (
     <Sphere args={[2, 64, 64]}>
