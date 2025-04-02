@@ -1,7 +1,7 @@
 import React, { Suspense } from "react";
 import { Canvas, useLoader } from "@react-three/fiber";
-import { OrbitControls, Stars } from "@react-three/drei";
-import { Sphere, Html } from "@react-three/drei";
+import { OrbitControls, Stars, Html } from "@react-three/drei";
+import { Sphere } from "@react-three/drei";
 import * as THREE from "three";
 
 const countryData = [
@@ -41,7 +41,11 @@ function CountryMarker({ country }) {
         <meshStandardMaterial color="#facc15" emissive="#facc15" emissiveIntensity={0.6} />
       </mesh>
       <Html distanceFactor={10} style={{ color: "white", textAlign: "center", fontSize: "10px" }}>
-        {country.flag}<br />{country.role}<br />{country.name}
+        {country.flag}
+        <br />
+        {country.role}
+        <br />
+        {country.name}
       </Html>
     </group>
   );
@@ -50,7 +54,9 @@ function CountryMarker({ country }) {
 function Earth({ darkMode }) {
   const texture = useLoader(
     THREE.TextureLoader,
-    darkMode ? "/assets/earth-night.jpg" : "/assets/earth-daymap.jpg"
+    darkMode
+      ? "/assets/earth_nightmap_hd.jpg" // ✅ make sure this is placed in /public/assets/
+      : "/assets/earth_daymap.jpg"
   );
 
   return (
@@ -64,17 +70,15 @@ export default function Globe({ darkMode }) {
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
       <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
-        <ambientLight intensity={darkMode ? 0.3 : 0.6} />
+        <ambientLight intensity={darkMode ? 0.25 : 0.5} />
         <pointLight position={[10, 10, 10]} intensity={1} />
         <Stars radius={100} depth={50} count={3000} factor={4} fade />
-
-        <Suspense fallback={null}>
+        <Suspense fallback={<Html>Loading globe...</Html>}>
           <Earth darkMode={darkMode} />
           {countryData.map((c, i) => (
             <CountryMarker key={i} country={c} />
           ))}
         </Suspense>
-
         <OrbitControls enableZoom enablePan={false} rotateSpeed={0.6} />
       </Canvas>
     </div>
