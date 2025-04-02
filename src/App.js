@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
-import GeopoliticalChessboard from './GeopoliticalChessboard';
 import Globe from './Globe';
 
 function App() {
   const [darkMode, setDarkMode] = useState(true); // default: dark
-  const [viewMode, setViewMode] = useState('chessboard'); // 'chessboard' or 'globe'
+  const [viewMode, setViewMode] = useState('globe'); // default to globe view
 
   return (
     <div
@@ -53,9 +52,11 @@ function App() {
       </div>
 
       {viewMode === 'chessboard' ? (
-        <GeopoliticalChessboard darkMode={darkMode} />
+        <div style={{ textAlign: 'center', padding: '40px' }}>
+          <p>♟️ Chessboard mode coming back soon...</p>
+        </div>
       ) : (
-        <Globe />
+        <Globe darkMode={darkMode} />
       )}
     </div>
   );
