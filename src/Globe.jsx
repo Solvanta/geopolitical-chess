@@ -1,10 +1,8 @@
 import React, { Suspense } from "react";
 import { Canvas, useLoader } from "@react-three/fiber";
-import { OrbitControls, Stars } from "@react-three/drei";
-import { Sphere, Html } from "@react-three/drei";
+import { OrbitControls, Stars, Sphere, Html } from "@react-three/drei";
 import * as THREE from "three";
 
-// Chess-country data
 const countryData = [
   { name: "USA", role: "♚ King", flag: "🇺🇸", lat: 38, lng: -97 },
   { name: "China", role: "♛ Queen", flag: "🇨🇳", lat: 35, lng: 103 },
@@ -24,7 +22,6 @@ const countryData = [
   { name: "Australia", role: "♟ Pawn", flag: "🇦🇺", lat: -25, lng: 133 }
 ];
 
-// Coordinate conversion (lat/lng → 3D XYZ)
 function convertLatLngToXYZ(lat, lng, radius) {
   const phi = (90 - lat) * (Math.PI / 180);
   const theta = (lng + 180) * (Math.PI / 180);
@@ -34,7 +31,6 @@ function convertLatLngToXYZ(lat, lng, radius) {
   return [x, y, z];
 }
 
-// Country visual marker
 function CountryMarker({ country }) {
   const [x, y, z] = convertLatLngToXYZ(country.lat, country.lng, 2.1);
   return (
@@ -50,29 +46,36 @@ function CountryMarker({ country }) {
   );
 }
 
-// 🌍 Main Globe Component
-export default function Globe({ darkMode }) {
+function Earth({ darkMode }) {
   const textureURL = darkMode
-    ? "https://upload.wikimedia.org/wikipedia/commons/0/02/Blue_Marble_2002.png" // Night-ish map
-    : "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Earth_Eastern_Hemisphere.jpg/640px-Earth_Eastern_Hemisphere.jpg";
+    ? "https://cdn.jsdelivr.net/gh/Solvanta/geopolitical-chess/assets/earth_nightmap.jpg"
+    : "https://cdn.jsdelivr.net/gh/Solvanta/geopolitical-chess/assets/earth_daymap.jpg";
 
-  const [earthTexture] = useLoader(THREE.TextureLoader, [textureURL]);
+  const texture = useLoader(THREE.TextureLoader, textureURL);
 
+  return (
+    <Sphere args={[2, 64, 64]}>
+      <meshStandardMaterial map={texture} />
+    </Sphere>
+  );
+}
+
+export default function Globe({ darkMode }) {
   return (
     <div style={{ width: "100vw", height: "100vh" }}>
       <Canvas camera={{ position: [0, 0, 5], fov: 45 }}>
         <ambientLight intensity={0.5} />
-        <pointLight position={[10, 10, 10]} intensity={1.2} />
+        <pointLight position={[10, 10, 10]} intensity={1} />
         <Stars radius={100} depth={50} count={3000} factor={4} fade />
+
         <Suspense fallback={null}>
-          <Sphere args={[2, 64, 64]}>
-            <meshStandardMaterial map={earthTexture} bumpScale={0.05} />
-          </Sphere>
+          <Earth darkMode={darkMode} />
           {countryData.map((c, i) => (
             <CountryMarker key={i} country={c} />
           ))}
         </Suspense>
-        <OrbitControls enableZoom enablePan={false} rotateSpeed={0.6} />
+
+        <OrbitControls enableZoom={true} enablePan={false} rotateSpeed={0.6} />
       </Canvas>
     </div>
   );
